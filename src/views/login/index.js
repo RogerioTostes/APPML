@@ -35,7 +35,7 @@ isLoading: false,
 email: '', 
 password: ''
 })      
-this.props.navigation.navigate('PerfilVendedor')
+this.props.navigation.navigate('PerfilAfiliado')
 })
 .catch(error => this.setState({ errorMessage: error.message }))
 }
