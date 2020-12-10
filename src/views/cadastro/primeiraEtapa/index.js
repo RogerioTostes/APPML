@@ -1,65 +1,97 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
-import { TextInput } from "react-native-paper";
+import React, { Component } from 'react';
+import {Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import firebase from '../../login/firebaseConfig';
 import { styles } from "./styles";
 
-export default function PrimeiraEtapa() {
-  const [nome, setNome] = useState("");
-  const [dataNascimento, setDataNascimento] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [pais, setPais] = useState("");
-  const [rua, setRua] = useState("");
-  const [bairro, setBairro] = useState("");
+export default class Signup extends Component {
+  
+  constructor() {
+    super();
+    this.state = { 
+      displayName: '',
+      email: '', 
+      password: '',
+      isLoading: false
+    }
+  }
 
-  return (
-    <View>
-      <TextInput
-        mode="outlined"
-        label="Nome"
-        style={styles.input}
-        value={nome}
-        onChangeText={(value) => setNome(value)}
-      />
+  updateInputVal = (val, prop) => {
+    const state = this.state;
+    state[prop] = val;
+    this.setState(state);
+  }
 
-      <TextInput
-        mode="outlined"
-        label="Data de Nascimento"
-        style={styles.input}
-        value={dataNascimento}
-        onChangeText={(value) => setDataNascimento(value)}
-      />
+  registerUser = () => {
+    if(this.state.email === '' && this.state.password === '') {
+      Alert.alert('Coloque os dados')
+    } else {
+      this.setState({
+        isLoading: true,
+      })
+      firebase
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then((res) => {
+        res.user.updateProfile({
+          displayName: this.state.displayName
+        })
+        console.log('Usuário criado com sucesso!')
+        Alert.alert('Usuário criado com sucesso!')
+        this.setState({
+          isLoading: false,
+          displayName: '',
+          email: '', 
+          password: ''
+        })
+        this.props.navigation.navigate('Login')
+      })
+      .catch(error => this.setState({ errorMessage: error.message }))      
+    }
+  }
 
-      <TextInput
-        mode="outlined"
-        label="CPF"
+  render() {
+    if(this.state.isLoading){
+      return(
+        <View style={styles.preloader}>
+          <ActivityIndicator size="large" color="#9E9E9E"/>
+        </View>
+      )
+    }    
+    return (
+      
+      <View style={styles.container}>  
+        <TextInput
+          style={styles.input}
+          placeholder="Nome"
+          value={this.state.displayName}
+          onChangeText={(val) => this.updateInputVal(val, 'displayName')}
+        />      
+        <TextInput
         style={styles.input}
-        value={cpf}
-        onChangeText={(value) => setCpf(value)}
-      />
+          placeholder="Email"
+          value={this.state.email}
+          onChangeText={(val) => this.updateInputVal(val, 'email')}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          value={this.state.password}
+          onChangeText={(val) => this.updateInputVal(val, 'password')}
+          maxLength={15}
+          secureTextEntry={true}
+        />   
+        <Button
+          color="#3740FE"
+          title="Se inscreva"
+          onPress={() => this.registerUser()}
+        />
 
-      <TextInput
-        mode="outlined"
-        label="País"
-        style={styles.input}
-        value={pais}
-        onChangeText={(value) => setPais(value)}
-      />
-
-      <TextInput
-        mode="outlined"
-        label="Rua"
-        style={styles.input}
-        value={rua}
-        onChangeText={(value) => setRua(value)}
-      />
-
-      <TextInput
-        mode="outlined"
-        label="Bairro"
-        style={styles.input}
-        value={bairro}
-        onChangeText={(value) => setBairro(value)}
-      />
-    </View>
-  );
+        <Text 
+         style={styles.input}
+          onPress={() => this.props.navigation.navigate('Login')}>
+          Já tem uma conta? Entre aqui com o Login
+        </Text>                          
+      </View>
+    );
+  }
 }

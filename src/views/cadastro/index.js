@@ -12,7 +12,7 @@ export default function Cadastro() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={{ flex: 1 }}>
+      {/* <View style={{ flex: 1 }}>
         <ProgressSteps {...optionsBar}>
           <ProgressStep {...optionsFristStep} label="Primeira etapa">
             <PrimeiraEtapa />
@@ -24,7 +24,14 @@ export default function Cadastro() {
             <TerceiraEtapa />
           </ProgressStep>
         </ProgressSteps>
-      </View>
+      </View> */}
+
+
+{/* <ProgressStep {...optionsFristStep} label="Primeira etapa"> */}
+            <PrimeiraEtapa />
+          {/* </ProgressStep> */}
+
+
     </KeyboardAvoidingView>
   );
 }
