@@ -1,109 +1,90 @@
-import React, { useState } from "react";
-import { View, Image, ScrollView, Dimensions } from "react-native";
-import { styles } from "./styles";
-import { Text, Paragraph, Card, Title, DataTable } from "react-native-paper";
-import sad from "../../images/sad.png";
-import range from "../../images/range.png";
-import {
-  BarChart,
-} from "react-native-chart-kit";
+import React, { Component } from 'react';
+import { StyleSheet, ScrollView, ActivityIndicator, View } from 'react-native';
+import { ListItem } from 'react-native-elements'
+import firebase from '../login/firebaseConfig';
 
-export default function Estatistica() {
+class MeusProdutos extends Component {
 
-  const data = {
-    labels: ["Visualizações", "Cliques", "No Carinho", "Compras" ],
-    datasets: [
-      {
-        data: [2000, 1053, 647, 240]
-      }
-    ]
-  };
+  constructor() {
+    super();
+    this.firestoreRef = firebase.firestore().collection('produtos');
+    this.state = {
+      isLoading: true,
+      userArr: []
+    };
+  }
 
-  var plotDim = Dimensions.get('window').width * 0.9
+  componentDidMount() {
+    this.unsubscribe = this.firestoreRef.onSnapshot(this.getCollection);
+  }
 
-  return (
-    <ScrollView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      
-      <View style={styles.resumo}>
-        <Card>
-          <Card.Content>
-            <Title style={styles.titleSize}>Afiliações</Title>
-            <DataTable.Row>
-              <Paragraph style={styles.titleSize}>
-                3 produtos afiliados -
-                <Paragraph style={styles.titlePara}>
-                  5 a menos que {"\n "} a semana anterior
-                </Paragraph>
-              </Paragraph>
-            </DataTable.Row>
-            <DataTable.Row>
-              <Paragraph style={styles.titleSize}>
-                Vendas influenciadas 240 -
-                <Paragraph style={styles.titlePara1}>
-                  3 a mais que a semana anterior
-                </Paragraph>
-              </Paragraph>
-            </DataTable.Row>
-            <DataTable.Row>
-              <Paragraph style={styles.titleSize}>
-                Cliques em afiliados 1053 -
-                <Paragraph style={styles.titlePara1}>
-                  35% mais que a semana anterior
-                </Paragraph>
-              </Paragraph>
-            </DataTable.Row>
-          </Card.Content>
-        </Card>
-      </View>
+  componentWillUnmount(){
+    this.unsubscribe();
+  }
 
-      <View style={styles.resumo}>
-        <Card>
-          <Card.Content>
-            <DataTable.Row>
-              <Image source={sad} style={styles.imgSad} />
-              <Title style={styles.titleSize}>
-                Ei ! parece que você tem {"\n "} poucos afiliados vá {"\n "}
-                para pagina do MELI e {"\n "} associe-se a mais produtos
-              </Title>
-            </DataTable.Row>
-          </Card.Content>
-        </Card>
-      </View>
-      <Card style={styles.card}>
-   
-      <BarChart
-      data={data}
-      width={plotDim}
-      height={220}
-      
-      chartConfig={{
-        backgroundColor: "#FFF159",
-        backgroundGradientFrom: "#fff",
-        backgroundGradientTo: "#fff",
-        color: () => '#333',
-        
-        propsForBackgroundLines: {
-            strokeWidth: 0
-        },
+  getCollection = (querySnapshot) => {
+    const userArr = [];
+    querySnapshot.forEach((res) => {
+      const { produto, valor } = res.data();
+      userArr.push({
+        key: res.id,
+        res,
+        produto,
+        valor,       
+      });
+    });
+    this.setState({
+      userArr,
+      isLoading: false,
+   });
+  }
 
-        fillShadowGradient: "#1D2C7C",
-        fillShadowGradientOpacity: 1, 
-      }}
-      
-      withHorizontalLabels={false}
-      showValuesOnTopOfBars={true}
-      />
-     
-      </Card>
-    </ScrollView>
-
-    
-  );
-  
-  
-  
+  render() {
+    if(this.state.isLoading){
+      return(
+        <View style={styles.preloader}>
+          <ActivityIndicator size="large" color="#9E9E9E"/>
+        </View>
+      )
+    }    
+    return (
+      <ScrollView style={styles.container}>
+          {
+            this.state.userArr.map((item, i) => {
+              return (
+                <ListItem
+                  key={i}
+                  chevron
+                  bottomDivider
+                  title={item.produto}
+                  subtitle={item.valor}
+                  onPress={() => {
+                    this.props.navigation.navigate('Detalhes', {
+                      userkey: item.key
+                    });
+                  }}/>
+              );
+            })
+          }
+      </ScrollView>
+    );
+  }
 }
 
+const styles = StyleSheet.create({
+  container: {
+   flex: 1,
+   paddingBottom: 22
+  },
+  preloader: {
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+})
+
+export default MeusProdutos;

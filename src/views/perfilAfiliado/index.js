@@ -97,7 +97,7 @@ export default function Perfil({ navigation }) {
             <Image source={caixa} style={styles.imgCard} />
           </View>
           <Card.Actions>
-            <Paragraph style={styles.text}>Meus Produtos</Paragraph>
+            <Paragraph style={styles.text}>Adicionar produtos</Paragraph>
           </Card.Actions>
         </Card>
       </View>
@@ -111,7 +111,7 @@ export default function Perfil({ navigation }) {
             <Image source={seach} style={styles.imgCard} />
           </View>
           <Card.Actions>
-            <Paragraph style={styles.text}>Estatísticas</Paragraph>
+            <Paragraph style={styles.text}>Meus Produtos</Paragraph>
           </Card.Actions>
         </Card>
       </View>

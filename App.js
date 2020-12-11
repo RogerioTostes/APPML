@@ -13,6 +13,7 @@ import Produtos from "./src/views/Produtos";
 import AwesomeIcon from "react-native-vector-icons/FontAwesome";
 import Dashboard from "./src/views/dashboard";
 import Estatisticas from "./src/views/estatisitica";
+import Detalhes from "./src/views/detalhes";
 import Ranking from "./src/views/ranking";
 import MeusAfiliados from "./src/views/meusAfiliados";
 import SolicitacaoAfiliacao from "./src/views/meusAfiliados/solicitacaoAfiliacao";
@@ -95,6 +96,11 @@ export default function App() {
             name="Estatisticas"
             options={{ ...headerOptions, title: "Estatisticas" }}
             component={Estatisticas}
+          />
+          <Stack.Screen
+            name="Detalhes"
+            options={{ ...headerOptions, title: "Detalhes" }}
+            component={Detalhes}
           />
           <Stack.Screen
             name="Afiliacoes"
